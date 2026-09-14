@@ -29,6 +29,13 @@ public class PermissaoController {
         return permissaoRepository.findAll();
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Permissao> buscarPorId(@PathVariable Long id) {
+        return permissaoRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @PostMapping
     public Permissao criar(@RequestBody Permissao permissao) {
         return permissaoRepository.save(permissao);
