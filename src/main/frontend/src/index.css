@@ -1,0 +1,96 @@
+:root {
+  --roxo: #6d3fd8;
+  --roxo-escuro: #4a2799;
+  --fundo: #f6f3fc;
+  --texto: #231b36;
+  --cinza: #6b6480;
+  --borda: #ddd5f0;
+  --perigo: #c93a4b;
+  font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+  color: var(--texto);
+  background: var(--fundo);
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; }
+#root { max-width: 860px; margin: 0 auto; padding: 0 16px 48px; }
+
+h1, h2, h3 { margin: 0 0 8px; }
+h2 { margin-top: 24px; }
+
+button {
+  background: var(--roxo);
+  color: #fff;
+  border: 0;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font: inherit;
+  cursor: pointer;
+}
+button:hover { background: var(--roxo-escuro); }
+button:disabled { opacity: .6; cursor: default; }
+button.secundario { background: #fff; color: var(--roxo); border: 1px solid var(--roxo); }
+button.perigo { background: var(--perigo); }
+button.link { background: none; color: var(--roxo); text-decoration: underline; padding: 4px; }
+
+input, select, textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+  font: inherit;
+  background: #fff;
+}
+textarea { resize: vertical; }
+
+.navbar {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
+  padding: 14px 0; border-bottom: 1px solid var(--borda);
+}
+.logo { color: var(--roxo); margin: 0; }
+.navbar nav { display: flex; gap: 6px; flex: 1; }
+.aba { background: transparent; color: var(--cinza); }
+.aba:hover { background: var(--borda); color: var(--texto); }
+.aba.ativa { background: var(--roxo); color: #fff; }
+.navbar-usuario { display: flex; align-items: center; gap: 10px; color: var(--cinza); }
+
+.form {
+  display: flex; flex-direction: column; gap: 10px;
+  background: #fff; border: 1px solid var(--borda); border-radius: 12px;
+  padding: 16px; margin: 12px 0 20px;
+}
+.form-acoes { display: flex; gap: 8px; }
+
+.auth { min-height: 100vh; display: grid; place-items: center; }
+.auth-card { width: 100%; max-width: 380px; }
+.sub { color: var(--cinza); margin: 0 0 6px; }
+
+.erro {
+  background: #fdecee; color: var(--perigo); border: 1px solid #f3c1c7;
+  border-radius: 8px; padding: 8px 12px; margin: 8px 0;
+}
+.vazio { color: var(--cinza); text-align: center; padding: 24px; }
+
+.lista, .cards { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+.item {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  background: #fff; border: 1px solid var(--borda); border-radius: 10px; padding: 12px 14px;
+}
+.item-acoes { display: flex; gap: 6px; }
+.selo {
+  display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 999px;
+  background: var(--borda); color: var(--roxo-escuro); font-size: .8rem;
+}
+
+.card {
+  background: #fff; border: 1px solid var(--borda); border-radius: 14px; padding: 16px;
+}
+.card-topo, .card-rodape { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.card-topo { margin-bottom: 6px; }
+.card-rodape { margin-top: 12px; color: var(--cinza); }
+.card .selo { margin-left: 0; }
+.selo.musica { background: #e6defa; }
+.selo.criacao { background: #fde7f1; color: #9b2c62; }
+.artista { color: var(--roxo); font-weight: 600; margin: 0 0 6px; }
+.conteudo { white-space: pre-wrap; margin: 0 0 8px; }
+.card a { color: var(--roxo); font-weight: 600; }
