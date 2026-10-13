@@ -4,16 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "usuario")
 public class Usuario {
 
     @Id
@@ -26,25 +21,15 @@ public class Usuario {
     @Column(nullable = false, unique = true)
     private String username;
 
-    @Column(nullable = false, unique = true)
-    private String email;
-
-    // WRITE_ONLY: aceita a senha na entrada, mas nunca a devolve nas respostas
+    // WRITE_ONLY: a senha pode chegar no POST/PUT, mas nunca volta nas respostas JSON
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(nullable = false)
     private String senha;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "perfil_id")
-    private Perfil perfil;
+    @Column(nullable = false, unique = true)
+    private String email;
 
-    public Usuario() {}
-
-    public Usuario(String nome, String username, String senha, String email) {
-        this.nome = nome;
-        this.username = username;
-        this.senha = senha;
-        this.email = email;
+    public Usuario() {
     }
 
     public Long getId() { return id; }
@@ -56,12 +41,9 @@ public class Usuario {
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-
     public String getSenha() { return senha; }
     public void setSenha(String senha) { this.senha = senha; }
 
-    public Perfil getPerfil() { return perfil; }
-    public void setPerfil(Perfil perfil) { this.perfil = perfil; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 }

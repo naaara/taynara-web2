@@ -2,6 +2,7 @@ package br.ueg.trindade.taynara_web2.controller;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,18 +20,15 @@ import br.ueg.trindade.taynara_web2.service.PermissaoService;
 
 @RestController
 @RequestMapping("/api/permissoes")
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
+@CrossOrigin(origins = "http://localhost:5173")
 public class PermissaoController {
 
-    private final PermissaoService permissaoService;
-
-    public PermissaoController(PermissaoService permissaoService) {
-        this.permissaoService = permissaoService;
-    }
+    @Autowired
+    private PermissaoService permissaoService;
 
     @GetMapping
     public List<Permissao> listar() {
-        return permissaoService.listar();
+        return permissaoService.listarTodas();
     }
 
     @GetMapping("/{id}")

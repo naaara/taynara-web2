@@ -15,7 +15,7 @@ function PermissaoItem({ permissao, onEditar, onExcluir }: PermissaoItemProps) {
       </div>
       <div className="item-acoes">
         <button onClick={() => onEditar(permissao)}>Editar</button>
-        <button className="perigo" onClick={() => onExcluir(permissao.id)}>
+        <button onClick={() => onExcluir(permissao.id)}>
           Excluir
         </button>
       </div>

@@ -3,7 +3,6 @@ export interface Usuario {
   nome: string;
   username: string;
   email: string;
-  perfil: string | null;
 }
 
 export interface UsuarioDados {

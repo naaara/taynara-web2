@@ -1,1 +1,1 @@
-export type Pagina = "postagens" | "usuarios" | "permissoes";
+export type Pagina = "usuarios" | "permissoes" | "produtos";

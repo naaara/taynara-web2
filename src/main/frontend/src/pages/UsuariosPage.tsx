@@ -41,7 +41,7 @@ function UsuariosPage() {
   }
 
   async function excluir(id: number) {
-    if (!window.confirm("Excluir este usuário (e as postagens dele)?")) return;
+    if (!window.confirm("Excluir este usuário?")) return;
     setErro("");
     try {
       await api.delete(`/usuarios/${id}`);

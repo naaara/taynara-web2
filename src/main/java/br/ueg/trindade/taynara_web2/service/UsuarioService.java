@@ -2,126 +2,86 @@ package br.ueg.trindade.taynara_web2.service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import br.ueg.trindade.taynara_web2.dto.UsuarioDto;
-import br.ueg.trindade.taynara_web2.dto.UsuarioRequest;
 import br.ueg.trindade.taynara_web2.model.Usuario;
-import br.ueg.trindade.taynara_web2.repository.PerfilRepository;
-import br.ueg.trindade.taynara_web2.repository.PostagemRepository;
 import br.ueg.trindade.taynara_web2.repository.UsuarioRepository;
 
 @Service
 public class UsuarioService {
 
-    private final UsuarioRepository usuarioRepository;
-    private final PerfilRepository perfilRepository;
-    private final PostagemRepository postagemRepository;
-    private final PasswordEncoder passwordEncoder;
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
-    public UsuarioService(UsuarioRepository usuarioRepository,
-                          PerfilRepository perfilRepository,
-                          PostagemRepository postagemRepository,
-                          PasswordEncoder passwordEncoder) {
-        this.usuarioRepository = usuarioRepository;
-        this.perfilRepository = perfilRepository;
-        this.postagemRepository = postagemRepository;
-        this.passwordEncoder = passwordEncoder;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    public List<Usuario> listarTodos() {
+        return usuarioRepository.findAll();
     }
 
-    @Transactional(readOnly = true)
-    public List<UsuarioDto> listar() {
-        return usuarioRepository.findAll().stream().map(UsuarioDto::new).toList();
-    }
-
-    @Transactional(readOnly = true)
-    public UsuarioDto buscarPorId(Long id) {
-        return new UsuarioDto(obter(id));
-    }
-
-    @Transactional(readOnly = true)
-    public UsuarioDto buscarPorUsername(String username) {
-        return new UsuarioDto(usuarioRepository.findByUsername(username)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado")));
-    }
-
-    /** Cadastro: valida, criptografa a senha e atribui o perfil padrão USUARIO. */
-    @Transactional
-    public UsuarioDto criar(UsuarioRequest r) {
-        validar(r, null, true);
-        Usuario u = new Usuario();
-        u.setNome(r.nome().trim());
-        u.setUsername(r.username().trim());
-        u.setEmail(r.email().trim().toLowerCase());
-        u.setSenha(passwordEncoder.encode(r.senha()));
-        u.setPerfil(perfilRepository.findByNome("USUARIO").orElse(null));
-        return new UsuarioDto(usuarioRepository.save(u));
-    }
-
-    /** Atualização: a senha só é trocada se for informada. */
-    @Transactional
-    public UsuarioDto atualizar(Long id, UsuarioRequest r) {
-        Usuario u = obter(id);
-        validar(r, id, false);
-        u.setNome(r.nome().trim());
-        u.setUsername(r.username().trim());
-        u.setEmail(r.email().trim().toLowerCase());
-        if (r.senha() != null && !r.senha().isBlank()) {
-            u.setSenha(passwordEncoder.encode(r.senha()));
-        }
-        return new UsuarioDto(usuarioRepository.save(u));
-    }
-
-    @Transactional
-    public void excluir(Long id) {
-        Usuario u = obter(id);
-        if ("admin".equals(u.getUsername())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "O usuário admin não pode ser excluído");
-        }
-        postagemRepository.deleteByAutorId(id);
-        usuarioRepository.delete(u);
-    }
-
-    private Usuario obter(Long id) {
+    public Usuario buscarPorId(Long id) {
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
     }
 
-    private void validar(UsuarioRequest r, Long idAtual, boolean senhaObrigatoria) {
-        if (r == null || vazio(r.nome()) || vazio(r.username()) || vazio(r.email())) {
-            throw erro("Nome, username e e-mail são obrigatórios");
+    public Usuario criar(Usuario dados) {
+        validar(dados, null);
+        if (dados.getSenha() == null || dados.getSenha().isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A senha é obrigatória");
         }
-        String username = r.username().trim();
-        String email = r.email().trim().toLowerCase();
-        if (username.length() < 3 || username.contains(" ")) {
-            throw erro("O username deve ter ao menos 3 caracteres e não pode ter espaços");
+        Usuario usuario = new Usuario();
+        copiar(usuario, dados);
+        usuario.setSenha(passwordEncoder.encode(dados.getSenha()));
+        return usuarioRepository.save(usuario);
+    }
+
+    public Usuario atualizar(Long id, Usuario dados) {
+        Usuario usuario = buscarPorId(id);
+        validar(dados, id);
+        copiar(usuario, dados);
+        // a senha só muda se uma nova for informada
+        if (dados.getSenha() != null && !dados.getSenha().isBlank()) {
+            usuario.setSenha(passwordEncoder.encode(dados.getSenha()));
         }
-        if (!email.contains("@") || email.startsWith("@") || email.endsWith("@")) {
-            throw erro("E-mail inválido");
+        return usuarioRepository.save(usuario);
+    }
+
+    public void excluir(Long id) {
+        usuarioRepository.delete(buscarPorId(id));
+    }
+
+    private void copiar(Usuario destino, Usuario origem) {
+        destino.setNome(origem.getNome().trim());
+        destino.setUsername(origem.getUsername().trim());
+        destino.setEmail(origem.getEmail().trim().toLowerCase());
+    }
+
+    // Regras de negócio: campos obrigatórios, e-mail válido e username/e-mail sem duplicidade
+    private void validar(Usuario dados, Long idAtual) {
+        if (vazio(dados.getNome()) || vazio(dados.getUsername()) || vazio(dados.getEmail())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nome, username e e-mail são obrigatórios");
         }
-        if (senhaObrigatoria && vazio(r.senha())) {
-            throw erro("A senha é obrigatória");
+        String email = dados.getEmail().trim().toLowerCase();
+        if (!email.contains("@")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "E-mail inválido");
         }
-        if (!vazio(r.senha()) && r.senha().length() < 6) {
-            throw erro("A senha deve ter ao menos 6 caracteres");
+        if (dados.getSenha() != null && !dados.getSenha().isBlank() && dados.getSenha().length() < 6) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A senha deve ter ao menos 6 caracteres");
         }
-        usuarioRepository.findByUsername(username)
-                .filter(x -> !x.getId().equals(idAtual))
-                .ifPresent(x -> { throw new ResponseStatusException(HttpStatus.CONFLICT, "Username já está em uso"); });
         usuarioRepository.findByEmail(email)
-                .filter(x -> !x.getId().equals(idAtual))
-                .ifPresent(x -> { throw new ResponseStatusException(HttpStatus.CONFLICT, "E-mail já está em uso"); });
+                .filter(u -> !u.getId().equals(idAtual))
+                .ifPresent(u -> { throw new ResponseStatusException(HttpStatus.CONFLICT, "E-mail já cadastrado"); });
+        usuarioRepository.findByUsername(dados.getUsername().trim())
+                .filter(u -> !u.getId().equals(idAtual))
+                .ifPresent(u -> { throw new ResponseStatusException(HttpStatus.CONFLICT, "Username já cadastrado"); });
     }
 
     private static boolean vazio(String s) {
         return s == null || s.isBlank();
-    }
-
-    private static ResponseStatusException erro(String msg) {
-        return new ResponseStatusException(HttpStatus.BAD_REQUEST, msg);
     }
 }

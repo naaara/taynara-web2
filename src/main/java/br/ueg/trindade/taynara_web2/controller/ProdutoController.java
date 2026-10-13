@@ -2,6 +2,7 @@ package br.ueg.trindade.taynara_web2.controller;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,45 +15,41 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.ueg.trindade.taynara_web2.dto.PerfilRequest;
-import br.ueg.trindade.taynara_web2.model.Perfil;
-import br.ueg.trindade.taynara_web2.service.PerfilService;
+import br.ueg.trindade.taynara_web2.model.Produto;
+import br.ueg.trindade.taynara_web2.service.ProdutoService;
 
 @RestController
-@RequestMapping("/api/perfis")
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
-public class PerfilController {
+@RequestMapping("/api/produtos")
+@CrossOrigin(origins = "http://localhost:5173")
+public class ProdutoController {
 
-    private final PerfilService perfilService;
-
-    public PerfilController(PerfilService perfilService) {
-        this.perfilService = perfilService;
-    }
+    @Autowired
+    private ProdutoService produtoService;
 
     @GetMapping
-    public List<Perfil> listar() {
-        return perfilService.listar();
+    public List<Produto> listar() {
+        return produtoService.listarTodos();
     }
 
     @GetMapping("/{id}")
-    public Perfil buscarPorId(@PathVariable Long id) {
-        return perfilService.buscarPorId(id);
+    public Produto buscarPorId(@PathVariable Long id) {
+        return produtoService.buscarPorId(id);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Perfil criar(@RequestBody PerfilRequest request) {
-        return perfilService.criar(request);
+    public Produto criar(@RequestBody Produto produto) {
+        return produtoService.criar(produto);
     }
 
     @PutMapping("/{id}")
-    public Perfil atualizar(@PathVariable Long id, @RequestBody PerfilRequest request) {
-        return perfilService.atualizar(id, request);
+    public Produto atualizar(@PathVariable Long id, @RequestBody Produto produto) {
+        return produtoService.atualizar(id, produto);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void excluir(@PathVariable Long id) {
-        perfilService.excluir(id);
+        produtoService.excluir(id);
     }
 }

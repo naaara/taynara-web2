@@ -34,7 +34,7 @@ function UsuarioForm({ usuarioEditando, onSalvar, onCancelar }: UsuarioFormProps
       <div className="form-acoes">
         <button type="submit">{usuarioEditando ? "Salvar alterações" : "Cadastrar"}</button>
         {usuarioEditando && (
-          <button type="button" className="secundario" onClick={onCancelar}>
+          <button type="button" onClick={onCancelar}>
             Cancelar
           </button>
         )}

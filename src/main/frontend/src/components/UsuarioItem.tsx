@@ -11,11 +11,10 @@ function UsuarioItem({ usuario, onEditar, onExcluir }: UsuarioItemProps) {
     <li className="item">
       <div className="item-texto">
         <strong>{usuario.nome}</strong> ({usuario.username}) — {usuario.email}
-        {usuario.perfil && <span className="selo">{usuario.perfil}</span>}
       </div>
       <div className="item-acoes">
         <button onClick={() => onEditar(usuario)}>Editar</button>
-        <button className="perigo" onClick={() => onExcluir(usuario.id)}>
+        <button onClick={() => onExcluir(usuario.id)}>
           Excluir
         </button>
       </div>

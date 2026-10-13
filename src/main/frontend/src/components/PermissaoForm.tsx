@@ -24,7 +24,7 @@ function PermissaoForm({ permissaoEditando, onSalvar, onCancelar }: PermissaoFor
       <div className="form-acoes">
         <button type="submit">{permissaoEditando ? "Salvar alterações" : "Cadastrar"}</button>
         {permissaoEditando && (
-          <button type="button" className="secundario" onClick={onCancelar}>
+          <button type="button" onClick={onCancelar}>
             Cancelar
           </button>
         )}
